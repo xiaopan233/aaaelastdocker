@@ -1,0 +1,45 @@
+input {
+    beats {
+        port => 5044
+    }
+
+    snmptrap {
+        port => 162
+        community => "Uh.P@ssw0rd"
+        tags => ["snmptrap"]
+    }
+
+}
+
+filter {
+
+}
+
+output {
+
+if "snmptrap" in [tags] {
+    elasticsearch {
+    hosts => "${ELASTICSEARCH_HOST_PORT}"
+    user=> "${ELASTIC_USERNAME}"
+    password => "${ELASTIC_PASSWORD}"
+    data_stream => "true"
+    data_stream_dataset => "log.snmptrap"
+    data_stream_namespace => "uh"
+    #pipeline => "logs-panw.panos-3.15.0-copy"
+    ssl => true
+    ssl_certificate_verification => false
+    cacert => "/certs/ca.crt"
+    }
+}
+else {
+    elasticsearch {
+        hosts => "${ELASTICSEARCH_HOST_PORT}"
+        user => "${ELASTIC_USERNAME}"
+        password => "${ELASTIC_PASSWORD}"
+        ssl => true
+        ssl_certificate_verification => false
+        cacert => "/certs/ca.crt"
+    }
+}
+
+}
